@@ -9,19 +9,14 @@ import kotlin.collections.mutableMapOf
 
 fun createFirstCharMap(str: String): Map<Char, Int> {
 	val map = mutableMapOf<Char, Int>()
-	for ((i, ch) in str.withIndex()) {
+	for ((i, ch) in str.withIndex().reversed()) {
 		if (i == 0) continue
-		if (map.containsKey(ch)) continue
-		map.put(ch, i)
+		map.put(ch, i)  // Smaller index (later) overwrites larger index.
 	}
 	return map
 }
 
-fun main() {
-	val line1 = readln()
-	val line2 = readln()
-	val map1 = createFirstCharMap(line1)
-	val map2 = createFirstCharMap(line2.reversed())
+fun getCharIndicesWithMinSum(map1: Map<Char, Int>, map2: Map<Char, Int>): Pair<Int, Int>? {
 	var ans = Int.MAX_VALUE
 	var ansComposition: Pair<Int, Int>? = null
 	for (ch in 'a'..'z') {
@@ -34,11 +29,20 @@ fun main() {
 			ansComposition = Pair(index1, index2)
 		}
 	}
-	if (ansComposition == null) {
+	return ansComposition
+}
+
+fun main() {
+	val line1 = readln()
+	val line2 = readln()
+	val map1 = createFirstCharMap(line1)
+	val map2 = createFirstCharMap(line2.reversed())
+	val bestIndices = getCharIndicesWithMinSum(map1, map2)
+	if (bestIndices == null) {
 		println("-1")
 	} else {
-		val (index1, index2) = ansComposition
+		val (index1, index2) = bestIndices
 		val size2 = line2.length
-		println("${line1.subSequence(0, index1 + 1)}${line2.subSequence(size2 - index2, size2)}")
+		println("${line1.take(index1 + 1)}${line2.takeLast(index2)}")
 	}
 }
