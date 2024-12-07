@@ -5,15 +5,12 @@
 // https://codeforces.com/problemset/problem/2045/C
 
 import kotlin.collections.Map
-import kotlin.collections.mutableMapOf
+import kotlin.collections.mapOf
 
 fun createFirstCharMap(str: String): Map<Char, Int> {
-	val map = mutableMapOf<Char, Int>()
-	for ((i, ch) in str.withIndex().reversed()) {
-		if (i == 0) continue
-		map.put(ch, i)  // Smaller index (later) overwrites larger index.
-	}
-	return map
+	// Reversed so smaller indices come later (overwrites earlier).
+	return str.withIndex().drop(1).reversed()
+		.map{(i, ch) -> Pair(ch, i)}.toMap()
 }
 
 fun getCharIndicesWithMinSum(map1: Map<Char, Int>, map2: Map<Char, Int>): Pair<Int, Int>? {
@@ -42,7 +39,6 @@ fun main() {
 		println("-1")
 	} else {
 		val (index1, index2) = bestIndices
-		val size2 = line2.length
 		println("${line1.take(index1 + 1)}${line2.takeLast(index2)}")
 	}
 }
