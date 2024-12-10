@@ -4,32 +4,34 @@
 // Problem: G. X Aura
 // https://codeforces.com/problemset/problem/2045/G
 
-fun readlnToLongs(): List<Long> =
-	readln().split(" ").map{x -> x.toLong()}.toList()
+fun readlnToInts(): List<Int> =
+	readln().split(" ").map{it.toInt()}.toList()
 
-fun longPow(b: Long, i: Long): Long {
-	var vi = i
-	var vb = b
-	var ans = 1L
-	while (vi > 0) {
-		if (vi % 2L == 1L) ans = ans * vb
-		vi /= 2L
-		vb = vb * vb
-	}
-	return ans
+class PowerTable(index: Int) {
+    inline operator fun get(index: Int): Int = powers[index + 9]
+
+    val powers: List<Int> = (-9..9).map{power(it, index)}.toList()
+
+    companion object {
+        private fun power(b: Int, i: Int): Int {
+            var ans = 1
+            for (i in 1..i) { ans *= b }
+            return ans
+        }
+    }
 }
 
-data class Board(val powTable: List<Long>, val h: List<String>) {
-	fun height(r: Int, c: Int): Int = this.h[r][c].code - '0'.code
-	fun score(r1: Int, c1: Int, r2: Int, c2: Int): Long =
-		this.powTable[this.height(r1, c1) - this.height(r2, c2) + 9]
-	fun loop(r: Int, c: Int): Long =
+data class Board(val powTable: PowerTable, val h: List<String>) {
+	inline fun height(r: Int, c: Int): Int = h[r][c].code - '0'.code
+	inline fun score(r1: Int, c1: Int, r2: Int, c2: Int): Int =
+		powTable[this.height(r1, c1) - this.height(r2, c2)]
+	fun loop(r: Int, c: Int): Int =
 		this.score(r, c, r + 1, c) + this.score(r + 1, c, r + 1, c + 1) +
 		this.score(r + 1, c + 1, r, c + 1) + this.score(r, c + 1, r, c)
 	fun irregular(): Boolean {
 		for (r in 1..<this.h.size)
 			for (c in 1..<this.h[0].length) {
-				if (this.loop(r - 1, c - 1) != 0L) return true
+				if (this.loop(r - 1, c - 1) != 0) return true
 			}
 		return false
 	}
@@ -49,20 +51,20 @@ data class Board(val powTable: List<Long>, val h: List<String>) {
 }
 
 fun main() {
-	val (r, c, x) = readlnToLongs()
-	val h: List<String> = (1..r).map{_ -> readln()}.toList()
-	val (q) = readlnToLongs()
-	val qs: List<List<Int>> = (1..q).map{_ -> readlnToLongs().map{x -> x.toInt() - 1}}.toList()
+	val (r, c, x) = readlnToInts()
+	val h: List<String> = (1..r).map{readln()}.toList()
+	val (q) = readlnToInts()
 
-	val powTable: List<Long> = (-9L..9L).map{i -> longPow(i, x)}.toList()
-	val board = Board(powTable, h)
+    val powTable = PowerTable(x)
+    val board = Board(powTable, h)
 	val irregular = board.irregular()
 	val potentialField = board.potentialField()
-	for ((r1, c1, r2, c2) in qs) {
+    for (i in 1..q) {
+        val (r1, c1, r2, c2) = readlnToInts().map{it.toInt() - 1}.toList()
 		if (irregular) {
 			println("INVALID")
 		} else {
 			println(potentialField[r2][c2] - potentialField[r1][c1])
 		}
-	}
+    }
 }
