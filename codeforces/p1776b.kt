@@ -17,15 +17,12 @@ fun main() {
         best[i][i + 1] = h.toLong()
         for (j in (i + 2) .. n) {
             var b = Long.MAX_VALUE
-            for (k in (i + 1) ..< j) {
-                b = min(b, best[i][k] + best[k][j])
-                //  AA BB   AA  BB
-                //   AABB    AABB
-                //    CC      CC
-                val reach = (x[j - 1] - x[i] + 1) / 2
-                if (reach <= h) b = min(b, best[i][k] + best[k][j] - (h - reach + 1))
-            }
-            best[i][j] = b
+            for (k in (i + 1) ..< j) b = min(b, best[i][k] + best[k][j])
+            //  AA BB   AA  BB
+            //   AABB    AABB
+            //    CC      CC
+            val reach = (x[j - 1] - x[i] + 1) / 2
+            best[i][j] = if (reach <= h) b - (h - reach + 1) else b
         }
     }
     println(best[0][n])
