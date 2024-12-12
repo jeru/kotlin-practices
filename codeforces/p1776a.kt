@@ -9,13 +9,10 @@ fun main() {
     val numCases = readln().toInt()
     for (i in 1..numCases) {
         readln()
-        val a = ArrayList<Int>()
-        readln().split(" ").map{it.toInt()}.toCollection(a)
-        a.add(0, 0)
-        a.add(1440)
-
-        val countsOverBar = {bar: Int -> (1..<a.size).filter{a[it] - a[it - 1] >= bar}.count() }
-        val ans = countsOverBar(240) >= 1 || countsOverBar(120) >= 2
-        println(if (ans) "YES" else "NO")
+        val a = listOf(listOf(0).asIterable(),
+                       readln().split(" ").map{it.toInt()},
+                       listOf(1440).asIterable()).flatten()
+        val num = (1..<a.size).map{(a[it] - a[it - 1]) / 120}.sum()
+        println(if (num >= 2) "YES" else "NO")
     }
 }
